@@ -51,7 +51,7 @@ func DecryptMetadata(encodedData string) ([]byte, error) {
 }
 
 // 解析元数据
-func ParseMetadata(data []byte) (*client.ClientMetadata, error) {
+func ParseMetadata(ip string, data []byte) (*client.ClientMetadata, error) {
 	if len(data) < 51 {
 		return nil, fmt.Errorf("metadata too short")
 	}
@@ -71,6 +71,7 @@ func ParseMetadata(data []byte) (*client.ClientMetadata, error) {
 		PtrGMH:      binary.BigEndian.Uint32(data[39:43]),
 		PtrGPA:      binary.BigEndian.Uint32(data[43:47]),
 		InternalIP:  binary.LittleEndian.Uint32(data[47:51]),
+		IpAddress:   ip,
 		TaskQueue:   &task.TaskQueue{Tasks: []task.Task{}},
 	}
 

