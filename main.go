@@ -6,6 +6,7 @@ import (
 	"NewCsTeamServer/profile"
 	"NewCsTeamServer/server/http"
 	"NewCsTeamServer/server/manager"
+	"NewCsTeamServer/utils"
 	"flag"
 	"fmt"
 	"github.com/kataras/golog"
@@ -14,24 +15,27 @@ import (
 )
 
 var (
-	profilename string
+	ProfileName string //读取适配profile
+	BeaconKey   string //读取原版cs生成的rsa公私钥
 )
 
 func init() {
-	flag.StringVar(&profilename, "profile", "jquery-c2.4.5.profile", "Load Your Profile")
+	flag.StringVar(&ProfileName, "profile", "jquery-c2.4.5.profile", "Load Your Profile")
+	flag.StringVar(&BeaconKey, "i", ".cobaltstrike.beacon_keys", "like -i .cobaltstrike.beacon_keys")
 	flag.Parse()
+	utils.GetRsaKey(BeaconKey) //读取原版cs生成的rsa公私钥
 	GetProfile()
 
 }
 func GetProfile() error { //TODO 粗略写了个解析profile的方案，后续完善和增加对rsa公私钥的读取解析
-	data, err := os.Open(profilename)
+	data, err := os.Open(ProfileName)
 	if err != nil {
 		fmt.Println("[info]", "Not Find Profile!")
 		return nil
 	}
 	infos := profile.GetProfile(data)
 	fmt.Println("--------------------------------------------------------------------")
-	fmt.Println("Profile Name:", profilename)
+	fmt.Println("Profile Name:", ProfileName)
 	fmt.Println("Profile GetUrl:", infos.HttpGet.Url)
 	fmt.Println("Profile OutPutAppendLen:", infos.HttpGet.OutPutAppendLen) //后续agent处理，直接过滤掉这个长度的字符串即可
 	fmt.Println("Profile OutPutPrependLen:", infos.HttpGet.OutPutPrependLen)
