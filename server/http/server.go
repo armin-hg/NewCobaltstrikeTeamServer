@@ -1,7 +1,7 @@
 package http
 
 import (
-	"NewCsTeamServer/config"
+	"NewCsTeamServer/profile"
 	"NewCsTeamServer/utils"
 	"context"
 	"github.com/gin-gonic/gin"
@@ -21,8 +21,8 @@ func HttpServer(port string, ssl bool) {
 	app.NoRoute(func(c *gin.Context) {
 		c.String(404, "404")
 	})
-	app.GET(config.ProfileConfig.GetUrl, HandleBeacon)         //处理Beacon请求
-	app.POST(config.ProfileConfig.PostUrl, HandleBeaconResult) //处理Beacon请求
+	app.GET(profile.ProfileConfig.HttpGet.Url, HandleBeacon)         //处理Beacon请求
+	app.POST(profile.ProfileConfig.HttpPost.Url, HandleBeaconResult) //处理Beacon请求
 	srv := &http.Server{
 		Addr:    "0.0.0.0:" + port, // HTTPS server will listen on this port
 		Handler: app,

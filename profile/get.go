@@ -46,6 +46,11 @@ func GetHttpPost(postdata malleable.HTTPPost) *ProConfig {
 	}
 	OutPut := postdata.Client.Output
 	var outcrypt []string
+	ServerOutPut := postdata.Server.Output
+	ServerHeader := postdata.Server.Headers
+	p.HttpPost.ServerHeader = ServerHeader
+	var serverout string
+	//var appendsss string
 	for i := 0; i < len(ID); i++ {
 		d := OutPut[i].String()
 		d = strings.ReplaceAll(d, "\n", "")
@@ -53,6 +58,7 @@ func GetHttpPost(postdata malleable.HTTPPost) *ProConfig {
 		if index != -1 {
 			// 分割字符串成两部分
 			firstPart := d[:index]
+
 			secondPart := d[index+1:]
 			strinfo := secondPart[1:]          //去掉第一个
 			strinfo = strinfo[:len(strinfo)-1] //去掉最后一个
@@ -76,11 +82,38 @@ func GetHttpPost(postdata malleable.HTTPPost) *ProConfig {
 			d = strings.Replace(d, ";", "", 1)
 			outcrypt = append(outcrypt, d) //Http_post_id_crypt
 		}
+
 		if d == "print;" {
 			p.HttpPost.ClientOutputType = "print"
 			p.HttpPost.ClientOutputTypeValue = ""
 		}
 	}
+	for i := 0; i < len(ServerOutPut); i++ { //Server Out put 解析
+		d := ServerOutPut[i].String()
+		d = strings.ReplaceAll(d, "\n", "")
+		index := strings.Index(d, " ")
+		if index != -1 {
+			// 分割字符串成两部分
+			firstPart := d[:index]
+			secondPart := d[index+1:]
+			strinfo := secondPart[1:] //去掉第一个
+			lastIndex := strings.LastIndex(strinfo, "\";")
+			if lastIndex != -1 {
+				strinfo = strinfo[:lastIndex] + strings.Replace(strinfo[lastIndex:], "\";", "", 1)
+			}
+			strinfo = strings.Replace(strinfo, "\\\"", "\"", -1)
+			strinfo = strings.Replace(strinfo, "\\\\", "\\", -1)
+			strinfo = strings.Replace(strinfo, "\\r", "\r", -1)
+			switch firstPart {
+			case "prepend":
+				serverout = strinfo + serverout
+			case "append":
+				serverout = serverout + strinfo
+			}
+		}
+
+	}
+	p.HttpPost.ServerOutput = serverout
 	p.HttpPost.IdCrypt = idcrypt
 	p.HttpPost.ClientOutputCrypt = outcrypt
 	return p
@@ -119,6 +152,8 @@ func GetHttpGet(getdata malleable.HTTPGet) *ProConfig {
 		}
 	}
 	p.HttpGet.MetadataCrypt = metadatacrypt
+	ServerHeader := getdata.Server.Headers
+	p.HttpGet.ServerHeader = ServerHeader
 	MetadataOut := getdata.Server.Output //http —— get  server 的配置
 	//fmt.Println("MetadataOut:", MetadataOut)
 	var outputcrypt []string
@@ -139,12 +174,12 @@ func GetHttpGet(getdata malleable.HTTPGet) *ProConfig {
 			}
 			strinfo = strings.Replace(strinfo, "\\\"", "\"", -1)
 			strinfo = strings.Replace(strinfo, "\\\\", "\\", -1)
-			strinfo = strings.Replace(strinfo, "\\r", "", -1)
+			strinfo = strings.Replace(strinfo, "\\r", "\r", -1)
 			//fmt.Println("secondPart:", len(secondPart))
 			switch firstPart {
 			case "prepend":
 				//prependlen = prependlen + len(strinfo)
-				prependsss = prependsss + strinfo
+				prependsss = strinfo + prependsss
 			case "append":
 				appendsss = appendsss + strinfo
 			}
@@ -154,10 +189,10 @@ func GetHttpGet(getdata malleable.HTTPGet) *ProConfig {
 			outputcrypt = append(outputcrypt, d) //获取get_output_crypt
 		}
 	}
-	prependsss = strings.ReplaceAll(prependsss, "\n", "")
-	appendsss = strings.ReplaceAll(appendsss, "\n", "")
-	p.HttpGet.OutPutPrependLen = len(prependsss)
-	p.HttpGet.OutPutAppendLen = len(appendsss)
+	//prependsss = strings.ReplaceAll(prependsss, "\n", "")
+	//appendsss = strings.ReplaceAll(appendsss, "\n", "")
+	p.HttpGet.OutPutPrepend = prependsss
+	p.HttpGet.OutPutAppend = appendsss
 	p.HttpGet.OutPutCrypt = outputcrypt
 	return p
 }

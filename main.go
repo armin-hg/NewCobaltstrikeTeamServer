@@ -2,14 +2,12 @@ package main
 
 import (
 	"NewCsTeamServer/client"
-	"NewCsTeamServer/config"
 	"NewCsTeamServer/profile"
 	"NewCsTeamServer/server/http"
 	"NewCsTeamServer/server/manager"
 	"NewCsTeamServer/utils"
 	"flag"
 	"fmt"
-	"github.com/kataras/golog"
 	_ "go.uber.org/automaxprocs"
 	"os"
 )
@@ -34,29 +32,11 @@ func GetProfile() error { //TODO 粗略写了个解析profile的方案，后续�
 		return nil
 	}
 	infos := profile.GetProfile(data)
-	fmt.Println("--------------------------------------------------------------------")
-	fmt.Println("Profile Name:", ProfileName)
-	fmt.Println("Profile GetUrl:", infos.HttpGet.Url)
-	fmt.Println("Profile OutPutAppendLen:", infos.HttpGet.OutPutAppendLen) //后续agent处理，直接过滤掉这个长度的字符串即可
-	fmt.Println("Profile OutPutPrependLen:", infos.HttpGet.OutPutPrependLen)
-	fmt.Println("Profile MetadataType:", infos.HttpGet.MetadataType)
-	fmt.Println("Profile CookieName:", infos.HttpGet.MetadataTypeValue)
-	fmt.Println("Profile PostUrl:", infos.HttpPost.Url)
-	fmt.Println("Profile Post:", infos.HttpPost)
-	fmt.Println("--------------------------------------------------------------------")
-	config.ProfileConfig = config.Profile{ //TODO 读取profile适配，现已有方案，增加对应的加解密函数
-		CookieName:  infos.HttpGet.MetadataTypeValue,
-		GetUrl:      infos.HttpGet.Url,
-		GetRetBody:  "This is a Test",
-		PostUrl:     infos.HttpPost.Url,
-		PostQuery:   infos.HttpPost.ClientOutputTypeValue,
-		PostRetBody: "Task received successfully",
-	}
+	profile.ProfileConfig = infos
 	return nil
 }
 func main() {
-	golog.Println(config.ProfileConfig)
 	client.GlobalClientManager = client.NewClientManager()
-	go http.HttpServer("8081", false)    //TODO 后续通过监听器，监听指定端口
+	go http.HttpServer("8085", false)    //TODO 后续通过监听器，监听指定端口
 	manager.RunTeamServer("8088", false) //管理端服务 TODO 后续使用websocket或其他方式进行通信
 }

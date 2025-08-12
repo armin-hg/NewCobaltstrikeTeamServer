@@ -8,7 +8,6 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/binary"
 	"encoding/pem"
 	"fmt"
@@ -16,19 +15,28 @@ import (
 )
 
 // 解密元数据（RSA解密）
-func DecryptMetadata(encodedData string) ([]byte, error) {
-	ciphertext, err := base64.StdEncoding.DecodeString(encodedData)
-	if err != nil {
-		return nil, fmt.Errorf("base64 decode error: %v", err)
-	}
-
+func DecryptMetadata(ciphertext []byte) ([]byte, error) {
 	block, _ := pem.Decode(config.PrivateKey)
 	if block == nil {
 		return nil, fmt.Errorf("private key error")
 	}
-	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+
+	var priv *rsa.PrivateKey
+	var err error
+
+	// 优先尝试 PKCS#1
+	priv, err = x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("parse private key error: %v", err)
+		// 再尝试 PKCS#8
+		key, err2 := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err2 != nil {
+			return nil, fmt.Errorf("parse private key error: %v / %v", err, err2)
+		}
+		var ok bool
+		priv, ok = key.(*rsa.PrivateKey)
+		if !ok {
+			return nil, fmt.Errorf("not an RSA private key")
+		}
 	}
 
 	plaintext, err := rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
@@ -36,7 +44,7 @@ func DecryptMetadata(encodedData string) ([]byte, error) {
 		return nil, fmt.Errorf("rsa decrypt error: %v", err)
 	}
 
-	// 验证MagicHead（0x0000BEEF）
+	// 验证 MagicHead（0x0000BEEF）
 	if len(plaintext) < 8 || binary.BigEndian.Uint32(plaintext[:4]) != 0x0000BEEF {
 		return nil, fmt.Errorf("invalid metadata header")
 	}
