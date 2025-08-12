@@ -44,6 +44,17 @@ func (cm *ClientManager) GetClient(clientID uint32) (*ClientMetadata, bool) {
 	client, exists := cm.clients[clientID]
 	return client, exists
 }
+
+// RemoveClient 移除客户端
+func (cm *ClientManager) RemoveClient(clientID uint32) bool {
+	cm.mutex.Lock()
+	defer cm.mutex.Unlock()
+	if _, exists := cm.clients[clientID]; exists {
+		delete(cm.clients, clientID)
+		return true
+	}
+	return false
+}
 func (cm *ClientManager) GetClientList() []HostList { //TODO 后续加入授权机制
 	cm.mutex.RLock()
 	defer cm.mutex.RUnlock()

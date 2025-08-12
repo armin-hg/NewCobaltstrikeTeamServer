@@ -23,7 +23,7 @@ func ParseTaskResult(data []byte) (TaskResult, error) {
 	if err != nil {
 		return result, fmt.Errorf("读取 Counter 失败: %v", err)
 	}
-	counter := binary.BigEndian.Uint32(counterBytes)
+	//counter := binary.BigEndian.Uint32(counterBytes)
 
 	// 读取 ResultLength（4字节）
 	resultLenBytes := make([]byte, 4)
@@ -66,7 +66,7 @@ func ParseTaskResult(data []byte) (TaskResult, error) {
 		log.Printf("警告: 检测到填充数据，长度=%d, 填充=%x", buf.Len(), buf.Bytes())
 	}
 
-	log.Printf("parseTaskResult: Counter=%d, ReplyType=%d, TaskID=%s, OutputLength=%d, Output=%s, FullData=%x",
-		counter, replyType, result.TaskID, len(result.Output), string(result.Output), data)
+	//log.Printf("parseTaskResult: Counter=%d, ReplyType=%d, TaskID=%s, OutputLength=%d, Output=%s, FullData=%x",
+	//	counter, replyType, result.TaskID, len(result.Output), string(result.Output), data)
 	return result, nil
 }

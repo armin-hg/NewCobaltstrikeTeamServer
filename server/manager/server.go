@@ -1,10 +1,13 @@
 package manager
 
 import (
+	"NewCsTeamServer/server/manager/admin"
 	"NewCsTeamServer/utils"
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/kataras/golog"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -16,14 +19,34 @@ import (
 func RunTeamServer(port string, ssl bool) { //TODO 后续开发成websocket，目前初版使用http
 	app := gin.New()
 	app.Use(gin.Recovery())
-	app.Use(utils.Cors())           //解决跨域问题
-	app.LoadHTMLGlob("templates/*") //测试用
+	app.Use(utils.Cors()) //解决跨域问题
+	//	app.LoadHTMLGlob("templates/*") //测试用
+	app.Static("/web", "./html")
 	app.NoRoute(func(c *gin.Context) {
 		c.String(404, "404")
 	})
-	app.GET("/get_client_list", handleGetClientList) //获取客户端列表
-	app.POST("/issue_task", handleIssueTask)         //下发命令
 
+	app.GET("/ws", func(c *gin.Context) { //TODO 鉴权
+		upgrader := websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+			HandshakeTimeout: 10 * time.Second,
+			ReadBufferSize:   1024,
+			WriteBufferSize:  1024,
+		}
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Printf("管理端 WebSocket 升级失败: %v", err)
+			return
+		}
+		clientIP := c.ClientIP()
+		//adminid := admin.UserInfo(c)
+		log.Printf("管理端  %s 已连接", clientIP)
+		admin2 := admin.GetConnectionManager().AddAdmin(conn)
+
+		admin.HandleAdminMessages(admin2, clientIP) //TODO 还需要传入用户权限
+	}) //WebSocket
 	srv := &http.Server{
 		Addr:    "0.0.0.0:" + port, // HTTPS server will listen on this port
 		Handler: app,

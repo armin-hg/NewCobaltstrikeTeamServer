@@ -12,7 +12,7 @@
 
 **“在网络暗影中，重塑 C2 规则。”**
 
-**NewCsTeamServer**：用 Go 重铸 Cobalt Strike 服务端，统治 C2 战场。无缝 Agent 控制、赛博朋克 Web 界面、Malleable Profile 解析，智慧 hacking，掌控网络。
+**NewCsTeamServer**：用 Go 重铸 Cobalt Strike 服务端，统治 C2 战场。无缝 Agent 控制、赛博朋克 Web 界面、Malleable Profile 解析，智慧 hacking，掌控网络。**基础架构已完成，欢迎探索与贡献！**
 
 > **📢 提示**：英文版文档请查看 [README_EN.md](README_EN.md)。
 
@@ -35,23 +35,24 @@
 
 ## ⚡ 当前功能
 
-- **Agent 上线**：稳定通信，随时待命。
-    - 访问 `http://127.0.0.1:8088/get_client_list` 查看客户端列表。
+- **Agent 上线**：稳定通信，随时待命（`http://127.0.0 Babel匈  . 管理端**：WebSocket 管理接口（4 个类型：客户端列表、广播消息、移除客户端、下发任务）。
 - **任务下发**：精准下发任务。
 - **结果回传**：Agent 执行后回传结果。
-- **流量适配**：支持原版 Agent 上线（Stageless 模式）。
+- **流量适配**：支持原版 Agent Stageless 上线。
+- **Web 管理页面**：简易管理界面（`html/index.html`）。
 
 ---
 
 ## 🛠 开发进度
 
-早期开发，进展迅猛。使用 [geacon](https://github.com/darkr4y/geacon) 测试，已完成以下里程碑：
+**基础架构已完成**，核心功能稳定运行！使用 [geacon](https://github.com/darkr4y/geacon) 测试，达成以下里程碑：
 
 ### 里程碑
 - **Agent 通信**：稳定 Agent 与服务端通信。
 - **任务管理**：任务下发与结果回传。
 - **流量适配**：原版 Agent Stageless 上线。
-- **每日更新**：持续优化功能。
+- **WebSocket 管理**：支持客户端管理功能。
+- **每日更新**：持续优化，基础框架就绪。
 
 ### 截图展示
 ![Agent 通信](png/1.png)  
@@ -65,7 +66,9 @@
 ![流量适配](png/服务端流量适配.png)  
 *适配原版 Agent 上线流量。*  
 ![监听器](png/监听器.png)  
-*监听器配置，精准控制。*
+*监听器配置，精准控制。*  
+![控制页面](png/控制.png)  
+*简易 Web 管理界面。*
 
 ---
 
@@ -83,29 +86,35 @@
 
 ### 🗓 2025-08-12
 - 适配 Profile（如 `jquery-c2.4.5.profile`），感谢 [geacon_pro](https://github.com/your-repo/geacon_pro) 的加解密支持。
-- 实现原版 Agent 上线（Stageless，相同 Profile 和密钥）。(可以直接用当前目录下的Beacon.exe(原版cobaltstrike生成的Stageless)进行上线测试，如果你相信的话。)
+- 实现原版 Agent 上线（Stageless，相同 Profile 和密钥）。
 - 配置监听器，同步上线域名与端口。
-- **后续**：
-    - 开发赛博朋克风格 Web UI，优化交互。
-    - 适配更多原版命令（如 `shell`、`upload` 等）。
+
+### 🗓 2025-08-13
+- 新增 WebSocket 管理接口（4 类型：获取客户端列表、广播消息、移除客户端、任务下发 JSON 格式）。
+- 新增简易 Web 管理页面（`html/index.html`）。
+- **状态**：基础架构完成，后续更新转为内部开发，欢迎社区贡献！
 
 ---
 
 ## ⏳ 时间线
 
 - **启动**：2025-08-05
-- **当前**：早期开发，核心通信与流量适配完成。
-- **未来**：Web UI 开发、命令扩展、Profile 增强。
+- **当前**：基础架构完成，核心功能（通信、任务、流量适配、管理接口）就绪。
+- **未来**：
+    - 开发赛博朋克风格 Web UI，优化交互体验。
+    - 适配更多原版命令（如 `shell`、`upload`、`download`）。
+    - 扩展 Profile 支持，探索 Staged 上线兼容性。
 
 ---
 
 ## 🕵️‍♂️ 加入行动
 
-召集黑客、开发者、梦想家，打造 C2 未来！行动指南：
+召集黑客、开发者、梦想家，共同打造 C2 未来！行动指南：
 
 - **讨论**：[GitHub Issues](https://github.com/your-repo/NewCsTeamServer/issues) 分享想法。
-- **贡献**：Fork，提交 Pull Request，增强功能。
-- **反馈**：提出 UX 优化或突破性创意。
+- **贡献**：Fork 项目，提交 Pull Request。
+- **反馈**：提出功能、UX 或创意建议。
+- **联系**：有兴趣深入研究？请联系我们！
 
 ---
 
